@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Essence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              'serif-display': ['Playfair Display', 'serif'],
+              'sans': ['Inter', 'sans-serif']
+            }
+          }
+        }
+      }
+    </script>
+    <style type="text/tailwindcss">
+      @layer base {
+        body {
+          @apply font-sans;
+        }
+        h1, h2, h3, h4, h5, h6 {
+          @apply font-serif-display;
+        }
+      }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-50 via-rose-50/30 to-amber-50/20 font-sans">
+    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200/50 sticky top-0 z-50">
+      <div class="container mx-auto px-6 py-4">
+        <div class="flex items-center justify-between">
+          <a href="/" class="text-2xl font-bold text-slate-900" style="font-family: 'Playfair Display', serif;">
+            Essence Admin
+          </a>
+
+          <div class="flex items-center gap-4">
+            <a href="/" class="text-slate-700 hover:text-rose-600 transition-colors font-medium">
+              Back to Store
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="min-h-screen flex items-center justify-center p-4">
+        <div class="w-full max-w-md">
+            <div class="bg-white rounded-2xl shadow-xl p-8">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold text-slate-900 mb-2 font-serif-display">
+                        Admin Login
+                    </h1>
+                    <p class="text-slate-600">
+                        Sign in to access the admin dashboard
+                    </p>
+                </div>
+
+                {% if messages %}
+                <div class="mb-6">
+                    {% for message in messages %}
+                    <div class="p-3 bg-{{ message.tags }}-100 text-{{ message.tags }}-700 rounded-lg text-sm mb-2">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <form method="post" class="space-y-4">
+                    {% csrf_token %}
+                    <div>
+                        <label for="username" class="block text-sm font-medium text-slate-700 mb-1">
+                            Username
+                        </label>
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            required
+                            class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                            placeholder="Enter your username"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-slate-700 mb-1">
+                            Password
+                        </label>
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            required
+                            class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                            placeholder="••••••••"
+                        >
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="w-full py-3 px-4 bg-gradient-to-r from-rose-600 to-rose-700 text-white font-semibold rounded-lg hover:shadow-lg transition-shadow"
+                    >
+                        Sign In as Admin
+                    </button>
+                </form>
+
+                <div class="mt-6 text-center">
+                    <p class="text-slate-600 text-sm">
+                        <a href="{% url 'auth_page' %}" class="text-rose-600 font-semibold hover:underline">
+                            Back to Customer Login
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

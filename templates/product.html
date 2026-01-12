@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} - Essence{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-6 py-12">
+  <a href="{% url 'shop' %}" class="flex items-center gap-2 text-slate-600 hover:text-rose-600 transition-colors mb-8">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+    </svg>
+    Back to Shop
+  </a>
+
+  <div class="grid lg:grid-cols-2 gap-12">
+    <div class="bg-white/60 backdrop-blur-sm rounded-2xl overflow-hidden border border-slate-200/50 shadow-xl">
+      <img
+        src="{{ product.image.url|default:'https://images.unsplash.com/photo-1541643600914-78b084683601?w=800' }}"
+        alt="{{ product.name }}"
+        class="w-full aspect-square object-cover"
+      />
+    </div>
+
+    <div class="flex flex-col">
+      <div class="mb-8">
+        <p class="text-sm font-medium text-rose-600 mb-2 uppercase tracking-wider">
+          {{ product.brand }}
+        </p>
+        {% if product.category %}
+        <p class="text-xs text-slate-500 mb-1">{{ product.category.name }}</p>
+        {% endif %}
+        <h1 class="text-4xl lg:text-5xl font-bold text-slate-900 mb-4" style="font-family: 'Playfair Display', serif;">
+          {{ product.name }}
+        </h1>
+        <p class="text-3xl font-bold text-slate-900 mb-6">
+          R{{ product.price|floatformat:2 }}
+        </p>
+        {% if product.size_ml %}
+        <p class="text-slate-600 mb-2">Size: {{ product.size_ml }}ml</p>
+        {% endif %}
+        {% if product.weight_g %}
+        <p class="text-slate-600 mb-2">Weight: {{ product.weight_g }}g</p>
+        {% endif %}
+        {% if product.dimensions %}
+        <p class="text-slate-600 mb-2">Dimensions: {{ product.dimensions }}</p>
+        {% endif %}
+        {% if product.color %}
+        <p class="text-slate-600 mb-2">Color: {{ product.color }}</p>
+        {% endif %}
+        {% if product.material %}
+        <p class="text-slate-600 mb-2">Material: {{ product.material }}</p>
+        {% endif %}
+      </div>
+
+      {% if product.description %}
+      <div class="mb-8">
+        <h2 class="text-xl font-semibold text-slate-900 mb-3" style="font-family: 'Playfair Display', serif;">
+          Description
+        </h2>
+        <p class="text-slate-700 leading-relaxed">{{ product.description }}</p>
+      </div>
+      {% endif %}
+
+      {% if product.notes %}
+      <div class="mb-8">
+        <h2 class="text-xl font-semibold text-slate-900 mb-3" style="font-family: 'Playfair Display', serif;">
+          Notes
+        </h2>
+        <p class="text-slate-700">{{ product.notes }}</p>
+      </div>
+      {% endif %}
+
+      <div class="mt-auto">
+        <form method="post" action="{% url 'add_to_cart' product.id %}" class="space-y-6">
+          {% csrf_token %}
+          <div class="flex items-center gap-4 mb-6">
+            <label class="text-slate-700 font-medium">Quantity:</label>
+            <div class="flex items-center gap-2">
+              <input type="hidden" name="quantity" value="1" id="quantity-input" />
+              <button
+                type="button"
+                onclick="adjustQuantity(-1)"
+                class="w-10 h-10 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors font-semibold"
+              >
+                -
+              </button>
+              <span id="quantity-display" class="w-12 text-center font-semibold text-slate-900">
+                1
+              </span>
+              <button
+                type="button"
+                onclick="adjustQuantity(1)"
+                class="w-10 h-10 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors font-semibold"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            class="w-full px-8 py-4 bg-gradient-to-r from-rose-600 to-rose-700 text-white font-semibold rounded-lg shadow-lg shadow-rose-500/30 hover:shadow-xl hover:shadow-rose-500/40 transition-all duration-300 hover:-translate-y-0.5 flex items-center justify-center gap-2"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100-4 2 2 0 000 4z"></path>
+            </svg>
+            Add to Cart
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function adjustQuantity(change) {
+    const quantityInput = document.getElementById('quantity-input');
+    const quantityDisplay = document.getElementById('quantity-display');
+    let currentQuantity = parseInt(quantityInput.value);
+
+    currentQuantity += change;
+    if (currentQuantity < 1) currentQuantity = 1;
+
+    quantityInput.value = currentQuantity;
+    quantityDisplay.textContent = currentQuantity;
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Proof of Payment Received - Essence Luxury Perfumes</title>
+</head>
+<body>
+    <div style="max-width: 600px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif;">
+        <h2 style="color: #d63384;">Essence Luxury Perfumes</h2>
+        
+        <h3>Proof of Payment Received</h3>
+        
+        <p>Hello,</p>
+        
+        <p>We have received your proof of payment for Order #{{ order_id }}.</p>
+        
+        <p><strong>File:</strong> {{ file_name }}</p>
+        <p><strong>Status:</strong> {{ status }}</p>
+        
+        <p>Our team will verify your payment and update your order status as soon as possible.</p>
+        
+        <p>You will receive another email once your payment has been confirmed and your order status has been updated.</p>
+        
+        <p>If you have any questions, please contact us at {{ contact_info.email|default:'contact@essence.com' }}.</p>
+        
+        <p>Thank you for choosing Essence Luxury Perfumes!</p>
+        
+        <p style="margin-top: 30px; color: #6c757d; font-size: 14px;">
+            This is an automated message, please do not reply directly to this email.
+        </p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Developer Payment Confirmation</title>
+</head>
+<body>
+    <div style="max-width: 600px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif;">
+        <h2 style="color: #e11d48;">Developer Payment Confirmation</h2>
+        
+        <p>Dear {{ developer_name }},</p>
+        
+        <p>Your payment of <strong>R{{ amount }}</strong> has been processed.</p>
+        
+        <h3>Payment Details:</h3>
+        <ul>
+            <li><strong>Amount:</strong> R{{ amount }}</li>
+            <li><strong>Payment Date:</strong> {{ payment_date }}</li>
+            <li><strong>Reference:</strong> {{ reference }}</li>
+        </ul>
+        
+        <p>Thank you for your services!</p>
+        
+        <p>Best regards,<br>
+        The {{ site_name }} Team</p>
+        
+        <hr style="margin: 20px 0; border: none; border-top: 1px solid #e5e7eb;">
+        <p style="font-size: 12px; color: #6b7280;">
+            This email was sent automatically by {{ site_name }}. Please do not reply to this email.
+        </p>
+    </div>
+</body>
+</html>

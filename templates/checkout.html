@@ -1,0 +1,354 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - Essence{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-rose-50/30 to-amber-50/20">
+  <div class="container mx-auto px-6 py-12">
+    <h1 class="text-4xl lg:text-5xl font-bold text-slate-900 mb-8" style="font-family: 'Playfair Display', serif;">
+      {{ title }}
+    </h1>
+
+    <div class="grid lg:grid-cols-3 gap-8">
+      <div class="lg:col-span-2">
+        <form method="post" class="bg-white/60 backdrop-blur-sm rounded-2xl p-8 border border-slate-200/50">
+          <h2 class="text-2xl font-semibold text-slate-900 mb-6" style="font-family: 'Playfair Display', serif;">
+            Delivery Method
+          </h2>
+
+          {% csrf_token %}
+
+          <div class="mb-6">
+            <div class="space-y-4">
+              <div class="flex items-center">
+                <input
+                  type="radio"
+                  id="shipping"
+                  
+                  name="delivery_method"
+                  value="shipping"
+                  class="h-4 w-4 text-rose-600 focus:ring-rose-500 border-slate-300"
+                  onchange="toggleAddressField()"
+                  checked
+                  required
+                >
+                <label for="shipping" class="ml-3 block text-sm font-medium text-slate-700">
+                  <span class="font-semibold">Home Delivery</span>
+                  <span class="block text-slate-500 text-sm mt-1">Deliver to your address (Free shipping)</span>
+                </label>
+              </div>
+
+              <div class="flex items-center">
+                <input
+                  type="radio"
+                  id="pep_paxi"
+                  
+                  name="delivery_method"
+                  value="pep_paxi"
+                  class="h-4 w-4 text-rose-600 focus:ring-rose-500 border-slate-300"
+                  onchange="toggleAddressField()"
+                  required
+                >
+                <label for="pep_paxi" class="ml-3 block text-sm font-medium text-slate-700">
+                  <span class="font-semibold">PEP/PAXI Delivery</span>
+                  <span class="block text-slate-500 text-sm mt-1">Collect from your nearest PEP branch</span>
+                </label>
+              </div>
+
+              <div class="flex items-center">
+                <!--
+                <input
+                  type="radio"
+                  id="pickup"
+                  name="delivery_method"
+                  value="pickup"
+                  class="h-4 w-4 text-rose-600 focus:ring-rose-500 border-slate-300"
+                  onchange="toggleAddressField()"
+                  required
+                >
+                <label for="pickup" class="ml-3 block text-sm font-medium text-slate-700">
+                  <span class="font-semibold">Store Pickup</span>
+                  <span class="block text-slate-500 text-sm mt-1">Pick up from our store at 123 Luxury Avenue, New York</span>
+                </label>
+                -->
+              </div>
+            </div>
+          </div>
+
+          <div id="shipping-address-section">
+            <h2 class="text-2xl font-semibold text-slate-900 mb-6 mt-8" style="font-family: 'Playfair Display', serif;">
+              Shipping Information
+            </h2>
+
+            <div class="space-y-6">
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  name="customer_name"
+                  value="{{ user.first_name|add:user.last_name|default:user.username }}"
+                  required
+                  class="w-full px-4 py-3 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  name="customer_email"
+                  value="{{ user.email }}"
+                  required
+                  class="w-full px-4 py-3 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">
+                  Shipping Address
+                </label>
+                <textarea
+                  name="shipping_address"
+                  rows="4"
+                  class="w-full px-4 py-3 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent resize-none"
+                  placeholder="Street address, city, state, zip code, country"
+                  required
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div id="pickup-info-section" class="hidden">
+            <h2 class="text-2xl font-semibold text-slate-900 mb-6 mt-8" style="font-family: 'Playfair Display', serif;">
+              Pickup Information
+            </h2>
+            <div class="space-y-6">
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  name="customer_name"
+                  value="{{ user.first_name|add:user.last_name|default:user.username }}"
+                  required
+                  class="w-full px-4 py-3 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  name="customer_email"
+                  value="{{ user.email }}"
+                  required
+                  class="w-full px-4 py-3 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                />
+              </div>
+
+              <div class="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                <p class="text-amber-800">
+                  <strong>Store Address:</strong> 123 Luxury Avenue, New York, NY 10001<br>
+                  <strong>Pickup Hours:</strong> Monday - Saturday 10:00 AM - 8:00 PM, Sunday 12:00 PM - 6:00 PM
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div id="pep-paxi-info-section" class="hidden">
+            <h2 class="text-2xl font-semibold text-slate-900 mb-6 mt-8" style="font-family: 'Playfair Display', serif;">
+              PEP/PAXI Delivery Information
+            </h2>
+            <div class="space-y-6">
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  name="customer_name"
+                  value="{{ user.first_name|add:user.last_name|default:user.username }}"
+                  required
+                  class="w-full px-4 py-3 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  name="customer_email"
+                  value="{{ user.email }}"
+                  required
+                  class="w-full px-4 py-3 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">
+                  Select City for Collection
+                </label>
+                <select
+                  name="pep_city"
+                  id="pep_city"
+                  class="w-full px-4 py-3 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                  required
+                >
+                  <option value="">Choose a city...</option>
+                  <option value="cape_town">Cape Town</option>
+                  <option value="johannesburg">Johannesburg</option>
+                  <option value="pretoria">Pretoria</option>
+                  <option value="durban">Durban</option>
+                  <option value="port_elizabeth">Port Elizabeth</option>
+                  <option value="bloemfontein">Bloemfontein</option>
+                  <option value="east_london">East London</option>
+                  <option value="polokwane">Polokwane</option>
+                  <option value="kimberley">Kimberley</option>
+                  <option value="upington">Upington</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">
+                  Specify Mall/Location for PEP Branch
+                </label>
+                <input
+                  type="text"
+                  name="pep_mall"
+                  placeholder="Enter the name of the mall or location where PEP is located"
+                  class="w-full px-4 py-3 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                  required
+                />
+              </div>
+
+              <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <p class="text-blue-800">
+                  <strong>Collection Instructions:</strong> Once your order is ready, you will receive a notification with collection details.
+                  Bring your ID and order number to collect your items from the selected PEP branch.
+                </p>
+              </div>
+            </div>
+          </div>
+        
+          <div class="mt-6 pt-6 border-t border-slate-200">
+            <h3 class="text-lg font-semibold text-slate-900 mb-3">Payment Information</h3>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
+              <p><strong>Bank Transfer Process:</strong></p>
+              <p>• After placing your order, you will see our banking details</p>
+              <p>• Transfer the total amount to our account</p>
+              <p>• Include your order number as reference</p>
+              <p>• Your order will be processed once payment is confirmed</p>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            class="w-full mt-8 px-8 py-4 bg-gradient-to-r from-rose-600 to-rose-700 text-white font-semibold rounded-lg shadow-lg shadow-rose-500/30 hover:shadow-xl hover:shadow-rose-500/40 transition-all duration-300 hover:-translate-y-0.5"
+          >
+            Review & Pay
+          </button>
+        </form>
+      </div>
+
+      <div class="lg:col-span-1">
+        <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-8 border border-slate-200/50 sticky top-24">
+          <h2 class="text-2xl font-semibold text-slate-900 mb-6" style="font-family: 'Playfair Display', serif;">
+            Order Summary
+          </h2>
+
+          <div class="space-y-4 mb-6">
+            {% for item in cart_items %}
+            <div class="flex justify-between text-slate-700">
+              <span class="flex-1">
+                {{ item.perfume.name }} × {{ item.quantity }}
+              </span>
+              <span class="font-semibold">
+                R{{ item.total_price|floatformat:2 }}
+              </span>
+            </div>
+            {% endfor %}
+          </div>
+
+          <div class="border-t border-slate-200 pt-4 space-y-2 mb-6">
+            <div class="flex justify-between text-slate-700">
+              <span>Subtotal</span>
+              <span class="font-semibold">R{{ subtotal|floatformat:2 }}</span>
+            </div>
+            <div class="flex justify-between text-slate-700">
+              <span>Shipping</span>
+              <span class="font-semibold">Free</span>
+            </div>
+            <div class="border-t border-slate-200 pt-2 flex justify-between text-lg font-bold text-slate-900">
+              <span>Total</span>
+              <span>R{{ subtotal|floatformat:2 }}</span>
+            </div>
+          </div>
+
+          <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+            <p class="text-amber-800 text-sm">
+              <strong>Payment Processing:</strong> After placing your order, you will be directed to our banking details page to complete your payment via EFT/Swift transfer.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggleAddressField() {
+    const selectedOption = document.querySelector('input[name="delivery_method"]:checked');
+    if (!selectedOption) return;
+
+    const deliveryMethod = selectedOption.value;
+
+    const shippingSection = document.getElementById('shipping-address-section');
+    const pickupSection = document.getElementById('pickup-info-section');
+    const pepPaxiSection = document.getElementById('pep-paxi-info-section');
+
+    if (deliveryMethod === 'shipping') {
+      shippingSection.classList.remove('hidden');
+      pickupSection.classList.add('hidden');
+      pepPaxiSection.classList.add('hidden');
+      // Make the shipping address field required for shipping
+      const shippingAddressField = document.querySelector('textarea[name="shipping_address"]');
+      shippingAddressField.required = true;
+    } else if (deliveryMethod === 'pickup') {
+      shippingSection.classList.add('hidden');
+      pickupSection.classList.remove('hidden');
+      pepPaxiSection.classList.add('hidden');
+      // Don't require shipping address for pickup
+      const shippingAddressField = document.querySelector('textarea[name="shipping_address"]');
+      shippingAddressField.required = false;
+    } else if (deliveryMethod === 'pep_paxi') {
+      shippingSection.classList.add('hidden');
+      pickupSection.classList.add('hidden');
+      pepPaxiSection.classList.remove('hidden');
+      // Don't require shipping address for PEP/PAXI
+      const shippingAddressField = document.querySelector('textarea[name="shipping_address"]');
+      shippingAddressField.required = false;
+    }
+  }
+
+  // Initialize on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    // Set up event listeners for radio buttons
+    const radioButtons = document.querySelectorAll('input[name="delivery_method"]');
+    radioButtons.forEach(radio => {
+      radio.addEventListener('change', toggleAddressField);
+    });
+
+    // Initial call to set up the correct view
+    toggleAddressField();
+  });
+</script>
+{% endblock %}

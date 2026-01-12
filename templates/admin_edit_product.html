@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}{% if product %}Edit Product{% else %}Create Product{% endif %} - Essence Admin{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-6 py-8">
+    <h1 class="text-3xl font-serif-display font-bold text-slate-900 mb-6">
+        {% if product %}Edit Product - {{ product.name }}{% else %}Create New Product{% endif %}
+    </h1>
+
+    <div class="bg-white p-6 rounded-lg shadow-md max-w-2xl">
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+
+            <div>
+                <label for="{{ form.name.id_for_label }}" class="block text-sm font-medium text-slate-700 mb-1">Name</label>
+                {{ form.name }}
+            </div>
+
+            <div>
+                <label for="{{ form.brand.id_for_label }}" class="block text-sm font-medium text-slate-700 mb-1">Brand</label>
+                {{ form.brand }}
+            </div>
+
+            <div>
+                <label for="{{ form.category.id_for_label }}" class="block text-sm font-medium text-slate-700 mb-1">Category</label>
+                <div class="flex items-center space-x-2">
+                    {{ form.category }}
+                    <a href="{% url 'create_category' %}" target="_blank" class="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
+                        Add New Category
+                    </a>
+                </div>
+            </div>
+
+            <div>
+                <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-slate-700 mb-1">Description</label>
+                {{ form.description }}
+            </div>
+
+            <div>
+                <label for="{{ form.price.id_for_label }}" class="block text-sm font-medium text-slate-700 mb-1">Price</label>
+                {{ form.price }}
+            </div>
+
+            <div>
+                <label for="{{ form.image.id_for_label }}" class="block text-sm font-medium text-slate-700 mb-1">Image</label>
+                {{ form.image }}
+                {% if product and product.image %}
+                    <div class="mt-2">
+                        <p class="text-sm text-slate-600">Current Image:</p>
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="mt-1 max-h-32 object-contain">
+                    </div>
+                {% endif %}
+            </div>
+
+            <div>
+                <label for="{{ form.size_ml.id_for_label }}" class="block text-sm font-medium text-slate-700 mb-1">Size (ml)</label>
+                {{ form.size_ml }}
+            </div>
+
+            <div>
+                <label for="{{ form.weight_g.id_for_label }}" class="block text-sm font-medium text-slate-700 mb-1">Weight (g)</label>
+                {{ form.weight_g }}
+            </div>
+
+            <div>
+                <label for="{{ form.dimensions.id_for_label }}" class="block text-sm font-medium text-slate-700 mb-1">Dimensions</label>
+                {{ form.dimensions }}
+            </div>
+
+            <div>
+                <label for="{{ form.color.id_for_label }}" class="block text-sm font-medium text-slate-700 mb-1">Color</label>
+                {{ form.color }}
+            </div>
+
+            <div>
+                <label for="{{ form.material.id_for_label }}" class="block text-sm font-medium text-slate-700 mb-1">Material</label>
+                {{ form.material }}
+            </div>
+
+            <div>
+                <label for="{{ form.notes.id_for_label }}" class="block text-sm font-medium text-slate-700 mb-1">Notes</label>
+                {{ form.notes }}
+            </div>
+
+            <div class="flex space-x-4">
+                <button type="submit" class="px-6 py-3 bg-rose-600 text-white rounded-lg hover:bg-rose-700">
+                    {% if product %}Update Product{% else %}Create Product{% endif %}
+                </button>
+                <a href="{% url 'manage_products' %}" class="px-6 py-3 bg-slate-300 text-slate-700 rounded-lg hover:bg-slate-400">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

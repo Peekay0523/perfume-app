@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta property="og:title" content="Essence" />
+    <meta property="og:description" content="Luxury perfume boutique - Discover your signature scent" />
+    <meta
+      property="og:image"
+      content="https://static.getmocha.com/og.png"
+      type="image/png"
+    />
+    <meta
+      property="og:url"
+      content="https://getmocha.com"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:author" content="Mocha" />
+    <meta property="og:site_name" content="Essence" />
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:site" content="@get_mocha" />
+    <meta property="twitter:title" content="Essence" />
+    <meta property="twitter:description" content="Luxury perfume boutique - Discover your signature scent" />
+    <meta
+      property="twitter:image"
+      content="https://static.getmocha.com/og.png"
+      type="image/png"
+    />
+    <link
+      rel="shortcut icon"
+      href="https://static.getmocha.com/favicon.ico"
+      type="image/x-icon"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="https://static.getmocha.com/apple-touch-icon.png"
+      type="image/png"
+    />
+    <title>{{ title }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              'serif-display': ['Playfair Display', 'serif'],
+              'sans': ['Inter', 'sans-serif']
+            }
+          }
+        }
+      }
+    </script>
+    <style type="text/tailwindcss">
+      @layer base {
+        body {
+          @apply font-sans;
+        }
+        h1, h2, h3, h4, h5, h6 {
+          @apply font-serif-display;
+        }
+      }
+    </style>
+  </head>
+  <body class="min-h-screen bg-gradient-to-br from-slate-50 via-rose-50/30 to-amber-50/20">
+    <div class="container mx-auto px-4 py-8">
+      <header class="text-center mb-12">
+        <h1 class="text-4xl md:text-6xl font-bold text-gray-800 mb-4">Welcome to Eyedea & Co</h1>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">Discover your signature scent in our luxury perfume boutique and other products</p>
+      </header>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+        <div class="bg-white rounded-lg shadow-md p-6 text-center">
+          <h2 class="text-2xl font-semibold mb-4 text-gray-800">Premium Products</h2>
+          <p class="text-gray-600">Curated selection of luxury Products from renowned designers</p>
+        </div>
+        <div class="bg-white rounded-lg shadow-md p-6 text-center">
+          <h2 class="text-2xl font-semibold mb-4 text-gray-800">Expert Curation</h2>
+          <p class="text-gray-600">Our fragrances and Products experts help you find the perfect items</p>
+        </div>
+        <div class="bg-white rounded-lg shadow-md p-6 text-center">
+          <h2 class="text-2xl font-semibold mb-4 text-gray-800">Secure Shopping</h2>
+          <p class="text-gray-600">Safe and secure payment options with fast delivery</p>
+        </div>
+      </div>
+
+      <div class="text-center">
+        <a href="/api/perfumes/" class="inline-block bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">
+          Explore Products
+        </a>
+      </div>
+    </div>
+
+    <footer class="mt-16 py-6 text-center text-gray-600 border-t border-gray-200">
+      <p>© 2025 Eyedea & Co. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - Essence{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-6 py-12">
+  <div class="mb-12">
+    <h1>Welcome {{ user.username|truncatechars:15 }}</h1>
+    <h1 class="text-4xl lg:text-5xl font-bold text-slate-900 mb-4" style="font-family: 'Playfair Display', serif;">
+      {{ title }}
+    </h1>
+    <p class="text-lg text-slate-600">
+      Discover our collection of luxury products across various categories
+    </p>
+  </div>
+
+  <!-- Category Filters -->
+  <div class="mb-12">
+    <h2 class="text-2xl font-bold text-slate-900 mb-4">Shop by Category</h2>
+    <div class="flex flex-wrap gap-2">
+      <a href="{% url 'shop' %}" class="px-4 py-2 rounded-full {% if not selected_category_id %}bg-rose-100 text-rose-700{% else %}bg-slate-100 text-slate-700{% endif %} hover:bg-rose-200 transition-colors">All Products</a>
+      {% for category in categories %}
+      <a href="{% url 'shop' %}?category={{ category.id }}" class="px-4 py-2 rounded-full {% if selected_category_id == category.id %}bg-rose-100 text-rose-700{% else %}bg-slate-100 text-slate-700{% endif %} hover:bg-rose-200 transition-colors">{{ category.name }}</a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+    {% for product in products %}
+    <div class="group bg-white/60 backdrop-blur-sm rounded-2xl overflow-hidden border border-slate-200/50 hover:shadow-2xl hover:border-slate-300 transition-all duration-300 hover:-translate-y-1">
+      <a href="{% url 'product_detail' product.id %}">
+        <div class="aspect-square overflow-hidden bg-gradient-to-br from-slate-100 to-rose-50">
+          <img
+            src="{{ product.image.url|default:'https://images.unsplash.com/photo-1541643600914-78b084683601?w=400' }}"
+            alt="{{ product.name }}"
+            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+          />
+        </div>
+
+        <div class="p-6">
+          <p class="text-sm font-medium text-rose-600 mb-2">{{ product.brand }}</p>
+          {% if product.category %}
+          <p class="text-xs text-slate-500 mb-1">{{ product.category.name }}</p>
+          {% endif %}
+          <h3 class="text-xl font-semibold text-slate-900 mb-2 line-clamp-1" style="font-family: 'Playfair Display', serif;">
+            {{ product.name }}
+          </h3>
+          <p class="text-sm text-slate-600 mb-4 line-clamp-2">
+            {{ product.description|truncatewords:15 }}
+          </p>
+          <div class="flex items-baseline justify-between">
+            <span class="text-2xl font-bold text-slate-900">
+              R{{ product.price|floatformat:2 }}
+            </span>
+            {% if product.size_ml %}
+            <span class="text-sm text-slate-500">{{ product.size_ml }}ml</span>
+            {% elif product.weight_g %}
+            <span class="text-sm text-slate-500">{{ product.weight_g }}g</span>
+            {% endif %}
+          </div>
+        </div>
+      </a>
+    </div>
+    {% empty %}
+    <div class="col-span-full text-center py-12">
+      <p class="text-xl text-slate-600">No products available at the moment.</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

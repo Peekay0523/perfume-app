@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Order Status Update - Essence Luxury Perfumes</title>
+</head>
+<body>
+    <div style="max-width: 600px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif;">
+        <h2 style="color: #d63384;">Essence Luxury Perfumes</h2>
+        
+        <h3>Order Status Update</h3>
+        
+        <p>Hello,</p>
+        
+        <p>The status of your Order #{{ order_id }} has been updated to: <strong>{{ new_status }}</strong></p>
+        
+        <p>Your order is being processed according to the new status. You will receive further updates as your order progresses.</p>
+        
+        <p>If you have any questions, please contact us at {{ contact_info.email|default:'contact@essence.com' }}.</p>
+        
+        <p>Thank you for choosing Essence Luxury Perfumes!</p>
+        
+        <p style="margin-top: 30px; color: #6c757d; font-size: 14px;">
+            This is an automated message, please do not reply directly to this email.
+        </p>
+    </div>
+</body>
+</html>
