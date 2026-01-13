@@ -247,42 +247,91 @@ def developer_payment(request):
     developers_pay = total_order_amounts * Decimal('0.05')
 
     if request.method == 'POST':
-        proof_of_payment = request.FILES.get('proof_of_payment')
         payment_method = request.POST.get('payment_method')
-        payment_date = request.POST.get('payment_date')
-        reference = request.POST.get('reference')
 
-        # Validate required fields
-        if not proof_of_payment:
-            messages.error(request, 'Please upload a proof of payment file.')
-        elif not payment_date:
-            messages.error(request, 'Please enter the payment date.')
-        elif not reference:
-            messages.error(request, 'Please enter a reference number.')
-        else:
-            # Process the proof of payment
-            try:
-                # Send email to developer with the proof of payment
-                send_developer_payment_confirmation(
-                    developer_email='pontshokganakga863@gmail.com',
-                    amount=developers_pay,
-                    payment_date=payment_date,
-                    reference=reference,
-                    proof_file=proof_of_payment
-                )
+        if not payment_method:
+            messages.error(request, 'Please select a payment method.')
+        elif payment_method not in ['eft', 'bobpay']:
+            messages.error(request, 'Please select a valid payment method (EFT or BobPay).')
+        elif payment_method == 'eft':
+            # Handle EFT payment method
+            proof_of_payment = request.FILES.get('proof_of_payment')
+            payment_date = request.POST.get('payment_date')
+            reference = request.POST.get('reference')
 
-                # Save the payment record
-                payment_record = DeveloperPayment.objects.create(
-                    amount=developers_pay,
-                    reference=reference,
-                    proof_of_payment=proof_of_payment
-                )
+            # Validate required fields for EFT
+            if not proof_of_payment:
+                messages.error(request, 'Please upload a proof of payment file.')
+            elif not payment_date:
+                messages.error(request, 'Please enter the payment date.')
+            elif not reference:
+                messages.error(request, 'Please enter a reference number.')
+            else:
+                # Process the proof of payment
+                try:
+                    # Send email to developer with the proof of payment
+                    send_developer_payment_confirmation(
+                        developer_email='pontshokganakga863@gmail.com',
+                        amount=developers_pay,
+                        payment_date=payment_date,
+                        reference=reference,
+                        proof_file=proof_of_payment
+                    )
 
-                messages.success(request, f'Proof of payment uploaded and email sent to the developer successfully! Amount: R{developers_pay}')
-                # Redirect to prevent resubmission on refresh
-                return redirect('developer_payment')
-            except Exception as e:
-                messages.error(request, f'Error sending email to developer: {str(e)}')
+                    # Save the payment record with the selected payment method
+                    payment_record = DeveloperPayment.objects.create(
+                        amount=developers_pay,
+                        reference=reference,
+                        payment_method=payment_method,
+                        proof_of_payment=proof_of_payment
+                    )
+
+                    messages.success(request, f'Proof of payment uploaded and email sent to the developer successfully! Amount: R{developers_pay} via EFT/Swift Transfer')
+                    # Redirect to prevent resubmission on refresh
+                    return redirect('developer_payment')
+                except Exception as e:
+                    messages.error(request, f'Error sending email to developer: {str(e)}')
+        elif payment_method == 'bobpay':
+            # Handle BobPay payment method
+            developer_email = request.POST.get('developer_email')
+            card_number = request.POST.get('card_number')
+            expiry_date = request.POST.get('expiry_date')
+            cvv = request.POST.get('cvv')
+            cardholder_name = request.POST.get('cardholder_name')
+            payment_date = request.POST.get('payment_date', '')  # BobPay might not need this
+            reference = request.POST.get('reference', f'BOBPAY-{int(developers_pay * 100)}')  # Generate reference for BobPay
+
+            # Validate required fields for BobPay
+            if not all([developer_email, card_number, expiry_date, cvv, cardholder_name]):
+                messages.error(request, 'Please fill in all required payment details for BobPay.')
+            else:
+                # Process the BobPay payment
+                try:
+                    # In a real implementation, this would integrate with BobPay's API
+                    # For now, we'll simulate a successful payment and send confirmation
+
+                    # Send email to developer with payment details
+                    send_developer_payment_confirmation(
+                        developer_email=developer_email,
+                        amount=developers_pay,
+                        payment_date=payment_date or 'Today',
+                        reference=reference,
+                        proof_file=None  # No proof file for BobPay simulation
+                    )
+
+                    # Save the payment record with the selected payment method
+                    payment_record = DeveloperPayment.objects.create(
+                        amount=developers_pay,
+                        reference=reference,
+                        payment_method=payment_method
+                        # For BobPay, we don't have a proof of payment file
+                    )
+
+                    messages.success(request, f'BobPay payment processed successfully! Amount: R{developers_pay} sent to developer via BobPay')
+                    # Redirect to prevent resubmission on refresh
+                    return redirect('developer_payment')
+                except Exception as e:
+                    messages.error(request, f'Error processing BobPay payment: {str(e)}')
 
     context = {
         'developers_pay': developers_pay,

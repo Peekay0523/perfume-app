@@ -116,7 +116,6 @@
                   rows="4"
                   class="w-full px-4 py-3 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent resize-none"
                   placeholder="Street address, city, state, zip code, country"
-                  required
                 ></textarea>
               </div>
             </div>
@@ -240,13 +239,42 @@
           </div>
         
           <div class="mt-6 pt-6 border-t border-slate-200">
-            <h3 class="text-lg font-semibold text-slate-900 mb-3">Payment Information</h3>
-            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
-              <p><strong>Bank Transfer Process:</strong></p>
-              <p>• After placing your order, you will see our banking details</p>
-              <p>• Transfer the total amount to our account</p>
-              <p>• Include your order number as reference</p>
-              <p>• Your order will be processed once payment is confirmed</p>
+            <h3 class="text-lg font-semibold text-slate-900 mb-3">Payment Method</h3>
+            <div class="space-y-4">
+              <div class="flex items-center">
+                <input
+                  type="radio"
+                  id="payment_eft"
+                  name="payment_method"
+                  value="eft"
+                  class="h-4 w-4 text-rose-600 focus:ring-rose-500 border-slate-300"
+                  checked
+                  required
+                >
+                <label for="payment_eft" class="ml-3 block text-sm font-medium text-slate-700">
+                  <span class="font-semibold">EFT/Swift Transfer</span>
+                  <span class="block text-slate-500 text-sm mt-1">Transfer funds directly to our bank account</span>
+                </label>
+              </div>
+
+              <div class="flex items-center">
+                <input
+                  type="radio"
+                  id="payment_bobpay"
+                  name="payment_method"
+                  value="bobpay"
+                  class="h-4 w-4 text-rose-600 focus:ring-rose-500 border-slate-300"
+                  required
+                >
+                <label for="payment_bobpay" class="ml-3 block text-sm font-medium text-slate-700">
+                  <span class="font-semibold">BobPay (Similar to PayPal)</span>
+                  <span class="block text-slate-500 text-sm mt-1">Secure online payment service</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
+              <p id="payment_instructions"><strong>Payment Instructions:</strong> After placing your order, you will be directed to complete your payment.</p>
             </div>
           </div>
 
@@ -315,40 +343,76 @@
     const pickupSection = document.getElementById('pickup-info-section');
     const pepPaxiSection = document.getElementById('pep-paxi-info-section');
 
+    // Hide all sections first
+    shippingSection.classList.add('hidden');
+    pickupSection.classList.add('hidden');
+    pepPaxiSection.classList.add('hidden');
+
+    // Reset required attributes for all conditional fields
+    const shippingAddressField = document.querySelector('textarea[name="shipping_address"]');
+    const pepCityField = document.querySelector('select[name="pep_city"]');
+    const pepMallField = document.querySelector('input[name="pep_mall"]');
+
+    if (shippingAddressField) {
+      shippingAddressField.required = false;
+    }
+    if (pepCityField) {
+      pepCityField.required = false;
+    }
+    if (pepMallField) {
+      pepMallField.required = false;
+    }
+
     if (deliveryMethod === 'shipping') {
       shippingSection.classList.remove('hidden');
-      pickupSection.classList.add('hidden');
-      pepPaxiSection.classList.add('hidden');
       // Make the shipping address field required for shipping
-      const shippingAddressField = document.querySelector('textarea[name="shipping_address"]');
-      shippingAddressField.required = true;
+      if (shippingAddressField) {
+        shippingAddressField.required = true;
+      }
     } else if (deliveryMethod === 'pickup') {
-      shippingSection.classList.add('hidden');
       pickupSection.classList.remove('hidden');
-      pepPaxiSection.classList.add('hidden');
-      // Don't require shipping address for pickup
-      const shippingAddressField = document.querySelector('textarea[name="shipping_address"]');
-      shippingAddressField.required = false;
+      // Don't require shipping address for pickup (already set to false above)
     } else if (deliveryMethod === 'pep_paxi') {
-      shippingSection.classList.add('hidden');
-      pickupSection.classList.add('hidden');
       pepPaxiSection.classList.remove('hidden');
-      // Don't require shipping address for PEP/PAXI
-      const shippingAddressField = document.querySelector('textarea[name="shipping_address"]');
-      shippingAddressField.required = false;
+      // Make PEP/PAXI fields required when this option is selected
+      if (pepCityField) {
+        pepCityField.required = true;
+      }
+      if (pepMallField) {
+        pepMallField.required = true;
+      }
+    }
+  }
+
+  function updatePaymentInstructions() {
+    const selectedPaymentMethod = document.querySelector('input[name="payment_method"]:checked');
+    if (!selectedPaymentMethod) return;
+
+    const paymentInstructions = document.getElementById('payment_instructions');
+    if (selectedPaymentMethod.value === 'eft') {
+      paymentInstructions.innerHTML = '<strong>Payment Instructions:</strong> After placing your order, you will be directed to our banking details page to complete your payment via EFT/Swift transfer.';
+    } else if (selectedPaymentMethod.value === 'bobpay') {
+      paymentInstructions.innerHTML = '<strong>Payment Instructions:</strong> After placing your order, you will be redirected to BobPay to complete your secure online payment.';
     }
   }
 
   // Initialize on page load
   document.addEventListener('DOMContentLoaded', function() {
-    // Set up event listeners for radio buttons
-    const radioButtons = document.querySelectorAll('input[name="delivery_method"]');
-    radioButtons.forEach(radio => {
+    // Set up event listeners for delivery method radio buttons
+    const deliveryRadioButtons = document.querySelectorAll('input[name="delivery_method"]');
+    deliveryRadioButtons.forEach(radio => {
       radio.addEventListener('change', toggleAddressField);
     });
 
-    // Initial call to set up the correct view
+    // Set up event listeners for payment method radio buttons
+    const paymentRadioButtons = document.querySelectorAll('input[name="payment_method"]');
+    paymentRadioButtons.forEach(radio => {
+      radio.addEventListener('change', updatePaymentInstructions);
+    });
+
+    // Initial calls to set up the correct views
     toggleAddressField();
+    updatePaymentInstructions(); // Initialize payment instructions
   });
 </script>
 {% endblock %}

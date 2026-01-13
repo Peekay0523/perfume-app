@@ -72,10 +72,16 @@ class Order(models.Model):
         ('pep_paxi', 'PEP/PAXI Delivery'),
     ]
 
+    PAYMENT_METHOD_CHOICES = [
+        ('eft', 'EFT/Swift Transfer'),
+        ('bobpay', 'BobPay (Similar to PayPal)'),
+    ]
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     total = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=20, choices=ORDER_STATUS_CHOICES, default='pending')
     delivery_method = models.CharField(max_length=20, choices=DELIVERY_METHOD_CHOICES, default='shipping')
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES, default='eft')
     customer_name = models.CharField(max_length=255, null=True, blank=True)
     customer_email = models.EmailField(null=True, blank=True)
     shipping_address = models.TextField(null=True, blank=True)

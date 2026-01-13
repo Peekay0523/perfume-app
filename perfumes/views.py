@@ -129,6 +129,7 @@ def create_order(request):
     customer_email = request.data.get('customer_email')
     shipping_address = request.data.get('shipping_address')
     delivery_method = request.data.get('delivery_method', 'shipping')
+    payment_method = request.data.get('payment_method', 'eft')
 
     if not customer_name or not customer_email or not shipping_address:
         return Response({'error': 'Missing required fields'}, status=status.HTTP_400_BAD_REQUEST)
@@ -148,6 +149,7 @@ def create_order(request):
             user=request.user,
             total=total,
             delivery_method=delivery_method,
+            payment_method=payment_method,
             customer_name=customer_name,
             customer_email=customer_email,
             shipping_address=shipping_address

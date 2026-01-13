@@ -63,9 +63,15 @@ class ProofOfPayment(models.Model):
 
 class DeveloperPayment(models.Model):
     """Model to track developer payments"""
+    PAYMENT_METHOD_CHOICES = [
+        ('eft', 'EFT/Swift Transfer'),
+        ('bobpay', 'BobPay'),
+    ]
+
     amount = models.DecimalField(max_digits=10, decimal_places=2, help_text="Amount paid to developer")
     payment_date = models.DateTimeField(auto_now_add=True, help_text="Date when payment was recorded")
     reference = models.CharField(max_length=255, help_text="Payment reference number")
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES, default='bank_transfer', help_text="Method of payment to developer")
     proof_of_payment = models.FileField(upload_to='developer_payments/', null=True, blank=True, help_text="Proof of payment file")
 
     # Track orders included in this payment

@@ -16,6 +16,13 @@ urlpatterns = [
     path('product/<int:product_id>/add/', views_html.add_to_cart, name='add_to_cart'),
     path('cart/<int:cart_item_id>/remove/', views_html.remove_from_cart, name='remove_from_cart'),
 
+    # BobPay payment
+    path('bobpay/<int:order_id>/', views_html.bobpay_payment_page, name='bobpay_payment'),
+    path('bobpay/<int:order_id>/process/', views_html.bobpay_process_payment, name='bobpay_process'),
+
+    # Admin proof of payment download
+    path('admin/proof-of-payment/<int:proof_id>/download/', views_admin.download_proof_of_payment, name='download_proof_of_payment'),
+
     # API endpoints (for AJAX calls and API access)
     path('api/products/', views.get_products, name='get_products'),
     path('api/products/<int:product_id>/', views.get_product, name='get_product'),

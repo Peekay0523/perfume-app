@@ -86,10 +86,15 @@ def checkout_page(request):
         customer_name = request.POST.get('customer_name', request.user.username)
         customer_email = request.POST.get('customer_email', request.user.email)
         delivery_method = request.POST.get('delivery_method', 'shipping')
+        payment_method = request.POST.get('payment_method', 'eft')  # Get the selected payment method
 
         # Validate delivery method
         if delivery_method not in ['shipping', 'pickup', 'pep_paxi']:
             delivery_method = 'shipping'  # Default fallback
+
+        # Validate payment method
+        if payment_method not in ['eft', 'bobpay']:
+            payment_method = 'eft'  # Default fallback
 
         # Determine shipping address based on delivery method
         shipping_address = ""
@@ -145,11 +150,12 @@ def checkout_page(request):
 
         try:
             with transaction.atomic():
-                # Create order
+                # Create order with payment method
                 order = Order.objects.create(
                     user=request.user,
                     total=subtotal,
                     delivery_method=delivery_method,
+                    payment_method=payment_method,  # Include the payment method
                     customer_name=customer_name,
                     customer_email=customer_email,
                     shipping_address=shipping_address
@@ -168,7 +174,13 @@ def checkout_page(request):
                 cart_items.delete()
 
                 messages.success(request, 'Order placed successfully!')
-                return redirect('banking_details', order_id=order.id)
+
+                # Redirect based on payment method
+                if payment_method == 'eft':
+                    return redirect('banking_details', order_id=order.id)
+                elif payment_method == 'bobpay':
+                    # For BobPay, redirect to the BobPay payment page
+                    return redirect('bobpay_payment', order_id=order.id)
         except Exception as e:
             messages.error(request, f'Error placing order: {str(e)}')
 
@@ -241,6 +253,69 @@ def remove_from_cart(request, cart_item_id):
     cart_item.delete()
     messages.success(request, 'Item removed from cart!')
     return redirect('cart')
+
+
+@login_required
+def bobpay_payment_page(request, order_id):
+    """BobPay payment page for completing payment"""
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+
+    if order.payment_method != 'bobpay':
+        messages.error(request, 'Invalid payment method for this order')
+        return redirect('checkout')
+
+    if order.status != 'pending':
+        messages.error(request, 'This order has already been processed')
+        return redirect('orders')
+
+    context = {
+        'order': order,
+        'title': 'BobPay Payment',
+        'user': request.user
+    }
+    return render(request, 'bobpay_payment.html', context)
+
+
+@login_required
+@require_http_methods(["POST"])
+def bobpay_process_payment(request, order_id):
+    """Process BobPay payment"""
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+
+    if order.payment_method != 'bobpay':
+        messages.error(request, 'Invalid payment method for this order')
+        return redirect('checkout')
+
+    if order.status != 'pending':
+        messages.error(request, 'This order has already been processed')
+        return redirect('orders')
+
+    # Get payment details from form
+    email = request.POST.get('email')
+    card_number = request.POST.get('card_number')
+    expiry_date = request.POST.get('expiry_date')
+    cvv = request.POST.get('cvv')
+    cardholder_name = request.POST.get('cardholder_name')
+    save_card = request.POST.get('save_card')
+
+    # Basic validation
+    if not all([email, card_number, expiry_date, cvv, cardholder_name]):
+        messages.error(request, 'Please fill in all payment details')
+        return redirect('bobpay_payment', order_id=order.id)
+
+    # In a real implementation, we would integrate with BobPay's API here
+    # For now, we'll simulate a successful payment
+
+    try:
+        # Update order status to approved after successful payment
+        order.status = 'approved'
+        order.save()
+
+        messages.success(request, f'Payment of R{order.total} completed successfully with BobPay!')
+        return redirect('order_detail', order_id=order.id)
+    except Exception as e:
+        messages.error(request, f'Error processing payment: {str(e)}')
+        return redirect('bobpay_payment', order_id=order.id)
 
 
 def index_page(request):

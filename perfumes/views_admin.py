@@ -7,7 +7,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from .models import Product, Category, CartItem, Order, OrderItem
 from .forms import ProductForm, CategoryForm
-from authentication.models import ContactInfo, BankingDetails
+from authentication.models import ContactInfo, BankingDetails, ProofOfPayment
 from authentication.utils import send_order_status_update
 
 
@@ -186,8 +186,8 @@ def edit_category(request, category_id=None):
 @staff_member_required
 def manage_orders(request):
     """Manage orders"""
-    orders = Order.objects.all().order_by('-created_at')
-    
+    orders = Order.objects.select_related('user').prefetch_related('proofs_of_payment').all().order_by('-created_at')
+
     # Search functionality
     search_query = request.GET.get('search', '')
     if search_query:
@@ -197,19 +197,19 @@ def manage_orders(request):
             Q(customer_name__icontains=search_query) |
             Q(customer_email__icontains=search_query)
         )
-    
+
     # Filter by status
     status_filter = request.GET.get('status', '')
     if status_filter:
         orders = orders.filter(status=status_filter)
-    
+
     # Pagination
     paginator = Paginator(orders, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    
+
     statuses = [choice[0] for choice in Order.ORDER_STATUS_CHOICES]
-    
+
     context = {
         'orders': page_obj,
         'search_query': search_query,
@@ -252,6 +252,42 @@ def toggle_user_active(request, user_id):
     user.is_active = not user.is_active
     user.save()
     return JsonResponse({'success': True, 'is_active': user.is_active})
+
+
+@staff_member_required
+def download_proof_of_payment(request, proof_id):
+    """Download proof of payment document"""
+    from django.http import HttpResponse, Http404
+    from django.conf import settings
+    import os
+
+    proof = get_object_or_404(ProofOfPayment, id=proof_id)
+
+    # Determine which file to serve
+    file_path = None
+    if proof.proof_document:
+        file_path = proof.proof_document.path
+        content_type = 'application/pdf'  # Default to PDF
+    elif proof.proof_image:
+        file_path = proof.proof_image.path
+        # Determine content type based on file extension
+        ext = os.path.splitext(file_path)[1].lower()
+        if ext == '.jpg' or ext == '.jpeg':
+            content_type = 'image/jpeg'
+        elif ext == '.png':
+            content_type = 'image/png'
+        elif ext == '.gif':
+            content_type = 'image/gif'
+        else:
+            content_type = 'application/octet-stream'
+
+    if not file_path or not os.path.exists(file_path):
+        raise Http404("File not found")
+
+    with open(file_path, 'rb') as f:
+        response = HttpResponse(f.read(), content_type=content_type)
+        response['Content-Disposition'] = f'attachment; filename="{os.path.basename(file_path)}"'
+        return response
 
 
 @staff_member_required
