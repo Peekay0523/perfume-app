@@ -30,6 +30,9 @@ def admin_dashboard(request):
     total_orders = Order.objects.count()
     total_users = User.objects.count()
 
+    # Count new orders (typically pending orders)
+    new_orders_count = Order.objects.filter(status='pending').count()
+
     # Calculate developer's pay (5% of total order amounts after last payment, only for approved/shipped/delivered orders)
     from django.db.models import Sum
     from decimal import Decimal
@@ -61,6 +64,7 @@ def admin_dashboard(request):
         'total_perfumes': total_perfumes,
         'total_orders': total_orders,
         'total_users': total_users,
+        'new_orders_count': new_orders_count,
         'developers_pay': developers_pay,
         'recent_orders': recent_orders,
         'title': 'Admin Dashboard',

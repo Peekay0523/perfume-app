@@ -197,8 +197,24 @@ def checkout_page(request):
 def orders_page(request):
     """Page to display user's orders"""
     orders = Order.objects.filter(user=request.user).order_by('-created_at')
+
+    # Enhance orders with first product image for display
+    enhanced_orders = []
+    for order in orders:
+        # Get the first order item to show its product image
+        first_item = order.items.first()  # Using the related name 'items'
+        if first_item and first_item.product and first_item.product.image:
+            order.first_product_image = first_item.product.image.url
+        else:
+            # Default image if no product image exists
+            order.first_product_image = 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=200'
+
+        # Also add a count of items in the order
+        order.item_count = order.items.count()
+        enhanced_orders.append(order)
+
     context = {
-        'orders': orders,
+        'orders': enhanced_orders,
         'title': 'My Orders'
     }
     return render(request, 'orders.html', context)
@@ -208,15 +224,25 @@ def orders_page(request):
 def order_detail(request, order_id):
     """Page to display details of a specific order"""
     order = get_object_or_404(Order, id=order_id, user=request.user)
-    order_items = OrderItem.objects.filter(order=order)
+    order_items = OrderItem.objects.filter(order=order).select_related('product')
 
-    # Calculate total price for each order item
+    # Calculate total price for each order item and add product details
+    enhanced_order_items = []
     for item in order_items:
         item.total_price = item.price * item.quantity
+        # Add product details to the item
+        item.name = item.product.name
+        item.brand = item.product.brand
+        item.description = item.product.description
+        if item.product.image:
+            item.image_url = item.product.image.url
+        else:
+            item.image_url = 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=200'
+        enhanced_order_items.append(item)
 
     context = {
         'order': order,
-        'order_items': order_items,
+        'order_items': enhanced_order_items,
         'title': f'Order #{order.id}'
     }
     return render(request, 'order_detail.html', context)

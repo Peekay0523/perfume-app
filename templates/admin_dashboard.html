@@ -17,9 +17,14 @@
             <p class="text-3xl font-bold text-rose-600">{{ total_users }}</p>
         </div>
         
-        <a href="{% url 'manage_orders' %}" class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow block">
+        <a href="{% url 'manage_orders' %}" class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow block relative">
             <h3 class="text-lg font-semibold text-slate-700 mb-2">Total Orders</h3>
             <p class="text-3xl font-bold text-rose-600">{{ total_orders }}</p>
+            {% if new_orders_count > 0 %}
+                <span class="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
+                    {{ new_orders_count }}
+                </span>
+            {% endif %}
         </a>
         
         <div class="bg-white p-6 rounded-lg shadow-md">

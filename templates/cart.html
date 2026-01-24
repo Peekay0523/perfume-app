@@ -16,7 +16,7 @@
           <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-slate-200/50 hover:shadow-lg transition-shadow">
             <div class="flex gap-6">
               <img
-                src="{{ item.product.image.url|default:'https://images.unsplash.com/photo-1541643600914-78b084683601?w=200' }}"
+                src="{% if item.product.image %}{{ item.product.image.url }}{% else %}https://images.unsplash.com/photo-1541643600914-78b084683601?w=200{% endif %}"
                 alt="{{ item.product.name }}"
                 class="w-24 h-24 object-cover rounded-lg"
               />

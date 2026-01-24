@@ -50,6 +50,10 @@
                         <p class="text-sm text-slate-600">Current Image:</p>
                         <img src="{{ product.image.url }}" alt="{{ product.name }}" class="mt-1 max-h-32 object-contain">
                     </div>
+                {% elif product %}
+                    <div class="mt-2">
+                        <p class="text-sm text-slate-600">No image uploaded</p>
+                    </div>
                 {% endif %}
             </div>
 

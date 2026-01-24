@@ -31,7 +31,7 @@
       <a href="{% url 'product_detail' product.id %}">
         <div class="aspect-square overflow-hidden bg-gradient-to-br from-slate-100 to-rose-50">
           <img
-            src="{{ product.image.url|default:'https://images.unsplash.com/photo-1541643600914-78b084683601?w=400' }}"
+            src="{% if product.image %}{{ product.image.url }}{% else %}https://images.unsplash.com/photo-1541643600914-78b084683601?w=400{% endif %}"
             alt="{{ product.name }}"
             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
           />

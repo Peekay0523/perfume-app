@@ -296,6 +296,29 @@ def delete_order(request, order_id):
     try:
         order = get_object_or_404(Order, id=order_id)
         order_id = order.id  # Store ID for the success message
+
+        # Check if this order contributes to unpaid developer payment
+        # Developer payment is calculated for orders with approved, shipped, or delivered status
+        valid_statuses = ['approved', 'shipped', 'delivered']
+
+        # Check if the order has a status that would contribute to developer payment
+        if order.status in valid_statuses:
+            # Find the date of the most recent developer payment
+            from authentication.models import DeveloperPayment
+            last_payment = DeveloperPayment.objects.order_by('-payment_date').first()
+
+            # If there's no payment record or the order was created after the last payment date,
+            # it means this order contributes to the unpaid developer payment amount
+            if not last_payment or order.created_at > last_payment.payment_date:
+                # Calculate the developer's share (5% of order total)
+                from decimal import Decimal
+                developer_share = order.total * Decimal('0.05')
+
+                return JsonResponse({
+                    'success': False,
+                    'error': f'Cannot delete order #{order_id}. This order contributes R{developer_share} to unpaid developer payment. Please process the developer payment before deleting this order.'
+                })
+
         order.delete()
         return JsonResponse({'success': True, 'message': f'Order {order_id} deleted successfully'})
     except Exception as e:
