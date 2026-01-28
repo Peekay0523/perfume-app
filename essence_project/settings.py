@@ -25,7 +25,9 @@ SECRET_KEY = 'django-insecure-udyy$asec3a)g*-yex!p_rbpu=w0hpgj7dz(pn6pz9g3#_5pk6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'testserver']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'testserver', '.ngrok-free.dev']
+
+
 
 
 # Application definition
@@ -222,6 +224,8 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:5173",
     "http://localhost:8000",
     "http://127.0.0.1:8000",
+    "https://nonenticingly-unicolor-anson.ngrok-free.dev",
+    "https://*.ngrok-free.dev",
 ]
 
 # Email settings
